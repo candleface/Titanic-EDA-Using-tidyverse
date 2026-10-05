@@ -69,7 +69,7 @@ Titanic$Fare[order(Titanic$Fare)]
 
 #sorting wrt descnding fare amnt 
 fare.dsc <- Titanic %>% arrange(desc(Fare))
-Titanic$Fare[order(Titanic$fare), decreasing = T]
+Titanic$Fare[order(Titanic$Fare, decreasing = T)]
 
 #Updating individual elements
 Titanic$Age[Titanic$PassengerId == 1] <- 23
@@ -84,7 +84,19 @@ Titanic %>% group_by(Pclass, Gender) %>%  summarise(Count = n())
 Titanic %>% group_by(Pclass) %>%  summarise(Survivors = sum(Survived.orNo)) %>% 
   arrange(Survivors)
 
+Titanic %>% group_by(Gender) %>% summarise(rate = mean(Survived.orNo))
+Titanic %>% group_by(Pclass) %>% summarise(rate = mean(Survived.orNo))
+colSums(is.na(Titanic) | Titanic == "")
+
 #writing data to a csv file
 write.csv(Titanic,"Titanic_modified.csv")
 
 newTitanic <- read.csv("Titanic_modified.csv", header = T)
+
+
+#plot to see which gender and class survived the most
+Titanic %>% group_by(Pclass, Gender) %>%
+  summarise(rate = mean(Survived.orNo), .groups = "drop") %>%
+  ggplot(aes(factor(Pclass), rate, fill = Gender)) +
+  geom_col(position = "dodge") +
+  labs(x = "Class", y = "Survival rate", title = "Survival by class and gender")
